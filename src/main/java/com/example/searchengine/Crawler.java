@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public abstract class Crawler {
 
-     final String indexFileName;
+    final String indexFileName;
 
     private String baseUrl = "https://api.interactions.ics.unisg.ch/hypermedia-environment/";
 
@@ -37,7 +37,8 @@ public abstract class Crawler {
         List<List<String>> returnList = new ArrayList<>();
         try {
             URL url = new URL(urlString);
-            Elements elements; //TODO: initialize elements based on the webpage at the given url.
+            Elements elements;
+            //TODO: initialize elements based on the webpage at the given url.
             //TODO: Use elements to put the keywords in the webpage in the list keywords.
             //TODO: Use elements to the hyperlinks to other pages in the environment in the list hyperlinks.
         } catch (Exception e){
