@@ -1,6 +1,10 @@
 package com.example.searchengine;
 
 import com.opencsv.CSVWriter;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.*;
+import org.jsoup.select.Elements;
+
 
 import java.io.*;
 import java.util.*;
@@ -36,43 +40,64 @@ public class SimpleCrawler extends Crawler {
      * @return the set of lines to print on the index file
      */
     public Set<String[]> explore(String startUrl, Set<String[]> lines, Set<String> visited){
-        //
-        System.out.println("startUrl: "+startUrl);
         //Creat Breathsearch queue
         Queue<String> queue = new LinkedList<>();
-
         //Add startUrl to queue
         queue.add(startUrl);
-
-        //Add startUrl to visited
-        visited.add(startUrl);
 
         //While queue is not empty
         while(!queue.isEmpty()){
             //Get first element of queue
             String url = queue.poll();
-
-            //TODO : Get Jsoup from url
-
-            //TODO : Get keywords from soup
-
-            //TODO : Get hyperlinks from soup and add them to queue if not in visited
-
-            //TODO : Add infos to lines
-
             //Add url to visited
             visited.add(url);
+
+            // Get Jsoup from url
+            Document doc = null;
+
+            try {
+                doc = Jsoup.connect(url).get();
+
+                //Get hyperlinks from soup and add them to queue if not in visited
+                Elements links = doc.select("a");
+
+                //Add links to queue if not yet visited
+                for (Element link : links ){
+                    String fullUrl = "https://api.interactions.ics.unisg.ch/hypermedia-environment/" + link.text();
+                    if (!visited.contains(fullUrl)){
+                        queue.add(fullUrl);
+                    }
+                }
+
+                //Add infos to lines -> /dffbabe7ab6d1 , three , amused , sheep
+                //Create String[] line
+                String[] line = new String[4];
+
+                //Add url to line
+                line[0] = ("/"+url.substring( url.lastIndexOf('/') + 1));
+
+                //Get keywords from soup
+                Elements keywords = doc.select("p");
+
+                //add elements to String[] line
+                int i = 1;
+                for (Element keyword : keywords){
+                    line[i] = keyword.text();
+                    i++;
+                }
+
+
+                //Add line to lines
+                lines.add(line);
+
+            } catch(IOException e) {
+                continue;
+                //TO-FIX: WHO THE FUCK IS MARK
+                //Mark : https://api.interactions.ics.unisg.ch/hypermedia-environment/1bd38608b1a6cf7e
+            }
+
         }
-
-
-
-
-
-
-
         return lines;
-
-
     }
 
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.FileReader;
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,7 @@ public abstract class CrawlerTest extends TestBase{
     public boolean testUrl(String[] line, String url, Set<String> values){
         boolean b = false;
         if (line[0].equals(url)){
+            System.out.println("The string has been found");
             Set<String> set = new HashSet<>(Arrays.asList(line).subList(1, line.length));
             assertEquals(set, values);
             b = true;
