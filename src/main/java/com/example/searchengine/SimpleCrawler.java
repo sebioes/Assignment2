@@ -49,11 +49,11 @@ public class SimpleCrawler extends Crawler {
         while(!queue.isEmpty()){
             //Get first element of queue
             String url = queue.poll();
-            //Add url to visited
+            //Add url to visited todo: visited???
             visited.add(url);
 
             // Get Jsoup from url
-            Document doc = null;
+            Document doc;
 
             try {
                 doc = Jsoup.connect(url).get();
@@ -63,6 +63,7 @@ public class SimpleCrawler extends Crawler {
 
                 //Add links to queue if not yet visited
                 for (Element link : links ){
+                    //todo: check if link starts with https://api.interactions.ics.unisg.ch/hypermedia-environment/
                     String fullUrl = "https://api.interactions.ics.unisg.ch/hypermedia-environment/" + link.text();
                     if (!visited.contains(fullUrl)){
                         queue.add(fullUrl);
@@ -71,10 +72,11 @@ public class SimpleCrawler extends Crawler {
 
                 //Add infos to lines -> /dffbabe7ab6d1 , three , amused , sheep
                 //Create String[] line
+                //todo: don't hardcode the size of the array
                 String[] line = new String[4];
 
                 //Add url to line
-                line[0] = ("/"+url.substring( url.lastIndexOf('/') + 1));
+                line[0] = (url.substring( url.lastIndexOf('/')));
 
                 //Get keywords from soup
                 Elements keywords = doc.select("p");
@@ -82,20 +84,16 @@ public class SimpleCrawler extends Crawler {
                 //add elements to String[] line
                 int i = 1;
                 for (Element keyword : keywords){
-                    line[i] = keyword.text();
-                    i++;
+                    line[i++] = keyword.text();
                 }
-
-
                 //Add line to lines
                 lines.add(line);
-
             } catch(IOException e) {
                 continue;
                 //TO-FIX: WHO THE FUCK IS MARK
+                //todo: regex to check absolute link destination
                 //Mark : https://api.interactions.ics.unisg.ch/hypermedia-environment/1bd38608b1a6cf7e
             }
-
         }
         return lines;
     }
