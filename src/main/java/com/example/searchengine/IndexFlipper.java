@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
+import java.util.stream.Stream;
+
 @Component
 public class IndexFlipper {
 
@@ -20,44 +22,51 @@ public class IndexFlipper {
             List<String[]> csvLines = csvReader.readAll();
             Set<String[]> lines = new HashSet<>();
 
-            //to ckeck if keyword has already been added
-            Set<String[]> temp = new HashSet<>();
 
-
-            // loop trough csvLines
+            Set<String[]> map = new HashSet<>();
+            // implementing a weird version of mapReduce where String[0] equals keyword and String[1] a link
             for (String[] line : csvLines) {
-                //loop trough keywords from line[i]:
                 for (int i = 1; i < line.length; i++) {
-                    //check if line[i] is already in lines[0]:
-                    for (String[] strings : temp) {
-                        if (strings[0].equals(line[i])) {
-                            strings[1] = strings[1] + " , " + line[0];
-                            break;
-                        }
-                    }
-                    //if not, add add keyword to Temp[0] and link to Temp[1]
                     String[] newLine = new String[2];
                     newLine[0] = line[i];
                     newLine[1] = line[0];
-                    temp.add(newLine);
-
+                    map.add(newLine);
                 }
             }
 
-            //add temp to lines
-            for (String[] strings : temp) {
-                //split links by comma
-                String[] links = strings[1].split(" , ");
-                //add strings[0] to links
-                String[] newLine = new String[links.length + 1];
+            Set<String[]> reduce = map
+                    .stream()
+                    .reduce(
+                    new HashSet<>(),
+                    (acc, line) -> {
+                        if (acc.isEmpty()) {
+                            acc.add(line);
+                        } else {
+                            boolean found = false;
+                            for (String[] accLine : acc) {
+                                if (accLine[0].equals(line[0])) {
+                                    accLine[1] = accLine[1] + " " + line[1];
+                                    found = true;
+                                }
+                            }
+                            if (!found) {
+                                acc.add(line);
+                            }
+                        }
+                        return acc;
+                    },
+                    (acc1, acc2) -> {
+                        acc1.addAll(acc2);
+                        return acc1;
+                    }
+            );
 
-                newLine[0] = strings[0];
-
-                for (int i = 0; i < links.length; i++) {
-                    newLine[i + 1] = links[i];
-                }
-                lines.add(newLine);
+            // print reduce
+            for (String[] line : reduce) {
+                //TODO clean up before storing
+                lines.add(line);
             }
+
 
 
         CSVWriter writer = new CSVWriter(new FileWriter(flippedIndexFileName),',', CSVWriter.NO_QUOTE_CHARACTER,' ',"\r\n");
