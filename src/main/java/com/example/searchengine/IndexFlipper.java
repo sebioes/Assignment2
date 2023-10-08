@@ -63,7 +63,16 @@ public class IndexFlipper {
 
             // print reduce
             for (String[] line : reduce) {
-                //TODO clean up before storing
+                //split line[1] in String[] links
+                String[] links = line[1].split(",");
+                // create a String[] newLine, with length links + 1
+                String[] newLine = new String[links.length + 1];
+                // add line[0] to newLine[0]
+                newLine[0] = line[0];
+                // add links to newLine[1:]
+                System.arraycopy(links, 0, newLine, 1, newLine.length - 1);
+
+                // add newLine to lines
                 lines.add(line);
             }
 
