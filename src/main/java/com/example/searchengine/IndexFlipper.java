@@ -74,7 +74,7 @@ public class IndexFlipper {
                 // add links to newLine[1:]
                 arraycopy(links, 0, newLine, 1, newLine.length - 1);
 
-                System.out.println(Arrays.toString(newLine));
+                //System.out.println(Arrays.toString(newLine));
                 // add newLine to lines
                 lines.add(newLine);
             }
