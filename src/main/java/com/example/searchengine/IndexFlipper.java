@@ -13,6 +13,8 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import static java.lang.System.arraycopy;
+
 @Component
 public class IndexFlipper {
 
@@ -45,7 +47,7 @@ public class IndexFlipper {
                             boolean found = false;
                             for (String[] accLine : acc) {
                                 if (accLine[0].equals(line[0])) {
-                                    accLine[1] = accLine[1] + " " + line[1];
+                                    accLine[1] = accLine[1] + "," + line[1];
                                     found = true;
                                 }
                             }
@@ -70,10 +72,11 @@ public class IndexFlipper {
                 // add line[0] to newLine[0]
                 newLine[0] = line[0];
                 // add links to newLine[1:]
-                System.arraycopy(links, 0, newLine, 1, newLine.length - 1);
+                arraycopy(links, 0, newLine, 1, newLine.length - 1);
 
+                System.out.println(Arrays.toString(newLine));
                 // add newLine to lines
-                lines.add(line);
+                lines.add(newLine);
             }
 
 
