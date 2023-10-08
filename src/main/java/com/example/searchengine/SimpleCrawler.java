@@ -53,7 +53,6 @@ public class SimpleCrawler extends Crawler {
             String url = queue.poll();
             //Add url to visited
             if (visited.contains(url)) {
-                System.out.println("url in visited: " + url);
                 continue;
             }
 
@@ -80,14 +79,14 @@ public class SimpleCrawler extends Crawler {
 
                 //Add infos to lines -> /dffbabe7ab6d1 , three , amused , sheep
                 //Create String[] line
-                //todo: don't hardcode the size of the array
-                String[] line = new String[4];
-
-                //Add url to line
-                line[0] = (url.substring( url.lastIndexOf('/')));
 
                 //Get keywords from soup
                 Elements keywords = doc.select("p");
+
+                String[] line = new String[keywords.size()+1];
+
+                //Add url to line
+                line[0] = (url.substring( url.lastIndexOf('/')));
 
                 //add elements to String[] line
                 int i = 1;
