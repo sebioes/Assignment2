@@ -18,14 +18,16 @@ public class SimpleCrawler extends Crawler {
 
     public void crawl(String startUrl){
         try {
-            int duration = 0; //TODO: update the value in the code
+            long startTime = System.currentTimeMillis();
             Set<String[]> lines = explore(startUrl, new HashSet<>(), new HashSet<>());
             FileWriter fileWriter = new FileWriter(indexFileName);
             CSVWriter writer = new CSVWriter(fileWriter,',', CSVWriter.NO_QUOTE_CHARACTER,' ',"\r\n");
             for (String[] line : lines) {
                 writer.writeNext(line);
             }
-            System.out.println("duration simple crawler: "+duration);
+            long endTime = System.currentTimeMillis();
+            long duration = (endTime - startTime) / 1000;
+            System.out.println("duration simple crawler: "+duration + "s");
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -49,7 +51,12 @@ public class SimpleCrawler extends Crawler {
         while(!queue.isEmpty()){
             //Get first element of queue
             String url = queue.poll();
-            //Add url to visited todo: visited???
+            //Add url to visited
+            if (visited.contains(url)) {
+                System.out.println("url in visited: " + url);
+                continue;
+            }
+
             visited.add(url);
 
             // Get Jsoup from url
@@ -61,12 +68,13 @@ public class SimpleCrawler extends Crawler {
                 //Get hyperlinks from soup and add them to queue if not in visited
                 Elements links = doc.select("a");
 
-                //Add links to queue if not yet visited
+                //check if link starts with https://api.interactions.ics.unisg.ch/hypermedia-environment/ and add to queue if not yet visited
                 for (Element link : links ){
-                    //todo: check if link starts with https://api.interactions.ics.unisg.ch/hypermedia-environment/
-                    String fullUrl = "https://api.interactions.ics.unisg.ch/hypermedia-environment/" + link.text();
-                    if (!visited.contains(fullUrl)){
-                        queue.add(fullUrl);
+                    String absoluteUrl = link.absUrl("href");
+                    if (absoluteUrl.startsWith("https://api.interactions.ics.unisg.ch/hypermedia-environment/")){
+                        if (!visited.contains(absoluteUrl)){
+                            queue.add(absoluteUrl);
+                        }
                     }
                 }
 
@@ -89,10 +97,7 @@ public class SimpleCrawler extends Crawler {
                 //Add line to lines
                 lines.add(line);
             } catch(IOException e) {
-                continue;
-                //TO-FIX: WHO THE FUCK IS MARK
-                //todo: regex to check absolute link destination
-                //Mark : https://api.interactions.ics.unisg.ch/hypermedia-environment/1bd38608b1a6cf7e
+                e.printStackTrace();
             }
         }
         return lines;
