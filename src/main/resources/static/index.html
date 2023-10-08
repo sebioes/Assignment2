@@ -3,10 +3,34 @@
 <head><title>Hypermedia Environment</title></head>
 <body>
 <form id = "form_id" action = "/search" method = "get">
+    <div id = "main">
+    <h1>The Coño Search Engine</h1>
     <!--add input for keyword-->
+    <input type = "text" name = "keyword" />
     <!--add button for "Search"-->
-    <!--add button for "I'm feeling lucky"-->
-    <h1>Holã coño</h1>
+        <div name="buttons">
+            <input type = "submit" value = "Search" />
+            <!--add button for "I'm feeling lucky"-->
+            <input type = "submit" value = "I'm feeling lucky" />
+        </div>
+    </div>
 </form>
 </body>
+<style>
+    #main {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px;
+    }
+    .buttons
+    {
+        display: flex;
+        align-self: center;
+        flex-direction: row;
+    }
+</style>
 </html>
