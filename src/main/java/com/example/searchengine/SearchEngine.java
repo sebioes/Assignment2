@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -47,5 +50,27 @@ public class SearchEngine {
 			indexFlipper.flipIndex(indexFileName, flippedIndexFileName);
 		}
 	}
+	@GetMapping("/")
+	public String index() {
+		try {
+			return Files.readString(Path.of("./src/main/resources/static/index.html"));
+		} catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+	@GetMapping("/search")
+	public List<String> search2(@RequestParam String keyword) {
+		return searcher.search(keyword, flippedIndexFileName);
+	}
+	@GetMapping("/lucky")
+	public String lucky(@RequestParam String keyword) {
+			List<String> urls = searcher.search(keyword, flippedIndexFileName);
+			if (urls.size() > 0) {
+				return urls.get(0);
+			} else {
+				return "No results found";
+			}
+	}
+
 
 }
