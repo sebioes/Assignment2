@@ -22,10 +22,43 @@ public class IndexFlipper {
         try {
             CSVReader csvReader = new CSVReader(new FileReader(indexFileName));
             List<String[]> csvLines = csvReader.readAll();
+
+            //to store keyword-link associations
+            Map<String, List<String>> keywordMap = new HashMap<>();
+
+
+            //populate keywordMap
+            for (String[] line : csvLines) {
+                String keyword = line[0];
+                for (int i = 1; i < line.length; i++) {
+                    keywordMap.computeIfAbsent(line[i], k -> new ArrayList<>()).add(keyword);
+                }
+            }
+
+            //write flippedIndex CSV
+            CSVWriter writer = new CSVWriter(new FileWriter(flippedIndexFileName),',', CSVWriter.NO_QUOTE_CHARACTER,' ',"\r\n");
+            keywordMap.forEach((link, keywords) -> {
+                String[] line = new String[keywords.size() + 1];
+                line[0] = link;
+                for (int i = 0; i < keywords.size(); i++) {
+                    line[i + 1] = keywords.get(i);
+                }
+                writer.writeNext(line);
+            });
+
+
+
+
+           /* //we'll use this later
             Set<String[]> lines = new HashSet<>();
 
 
+
+
+
+
             Set<String[]> map = new HashSet<>();
+
             // implementing a weird version of mapReduce where String[0] equals keyword and String[1] a link
             for (String[] line : csvLines) {
                 for (int i = 1; i < line.length; i++) {
@@ -84,7 +117,7 @@ public class IndexFlipper {
         CSVWriter writer = new CSVWriter(new FileWriter(flippedIndexFileName),',', CSVWriter.NO_QUOTE_CHARACTER,' ',"\r\n");
             for (String[] line : lines) {
                 writer.writeNext(line);
-            }
+            }*/
 
         } catch(Exception e){
             e.printStackTrace();
