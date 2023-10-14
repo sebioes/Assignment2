@@ -26,13 +26,27 @@ public class MultithreadCrawler extends Crawler {
     private boolean done = false;
 
     public MultithreadCrawler(String indexFileName){
-        //TODO: initialize
+        //todo: initialize
+
         super(indexFileName);
+
+        //initialise thread pool
+        int threadPoolSize = 8;
+        executorService = new ThreadPoolTaskExecutor();
+        executorService.setCorePoolSize(threadPoolSize);
+        executorService.setMaxPoolSize(threadPoolSize);
+        executorService.setThreadNamePrefix("CrawlerThread");
+        executorService.initialize();
+
+
+        //initialise visited and lines
+        visited = new CopyOnWriteArraySet<>();
+        lines = new CopyOnWriteArraySet<>();
     }
 
     public void crawl(String startUrl){
         double startTime = System.currentTimeMillis();
-        //TODO: complete
+        //todo: complete
         double endTime = System.currentTimeMillis();
         double duration = endTime - startTime;
         System.out.println("duration: "+duration);
@@ -41,7 +55,7 @@ public class MultithreadCrawler extends Crawler {
 
 
     /*
-      TODO: complete class.
+      todo: complete class.
       The purpose of this runnable is to do two tasks:
       1. Process the page at the given url (startUrl).
       2. Create new jobs for the hyperlinks found in the page.
@@ -75,7 +89,7 @@ public class MultithreadCrawler extends Crawler {
 
         @Override
         public void run() {
-            //TODO: complete
+            //todo: complete
         }
     }
 }
