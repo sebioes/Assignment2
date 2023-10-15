@@ -1,22 +1,16 @@
 package com.example.searchengine;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 
 @RestController
@@ -63,35 +57,39 @@ public class SearchEngine {
 	@GetMapping("/search")
 	public String search(@RequestParam String keyword) throws IOException {
 		List<String> urls = searcher.search(keyword, flippedIndexFileName);
+		String template = Files.readString(Path.of("./src/main/resources/static/index.html"));
 
-		// Create a StringBuilder to build the search results as HTML
-		StringBuilder resultHtml = new StringBuilder("<div class=\"result-container\"><ul>");
+		if(!urls.isEmpty()) {
+			// Create a StringBuilder to build the search results as HTML
+			StringBuilder resultHtml = new StringBuilder("<div class=\"result-container\"><ul>");
+			for (String url : urls) {
+				// Format each search result as a list item
+				resultHtml.append("<li><a href=\"").append(url).append("\">").append(url).append("</a></li>");
+			}
 
-		for (String url : urls) {
-			// Format each search result as a list item
-			resultHtml.append("<li><a href=\"").append(url).append("\">").append(url).append("</a></li>");
+			// Close the unordered list
+			resultHtml.append("</ul></div>");
+
+			// Replace the "${results}" placeholder with the dynamically generated search results
+			return template.replace("${results}", resultHtml.toString());
+		}else {
+			return template.replace("${results}", "<div class=\"result-container\">No results Found</div>");
 		}
-
-		// Close the unordered list
-		resultHtml.append("</ul></div>");
-
-
-		// Read the HTML template
+    }
+	@GetMapping("/lucky")
+	public RedirectView lucky(@RequestParam String keyword) {
+			List<String> urls = searcher.search(keyword, flippedIndexFileName);
+			if (!urls.isEmpty()) {
+				return new RedirectView(urls.get(0));
+			} else {
+				return new RedirectView("/no-results");
+			}
+	}
+	@GetMapping("/no-results")
+	public String noResult() throws IOException {
 		String template = Files.readString(Path.of("./src/main/resources/static/index.html"));
 
 		// Replace the "${results}" placeholder with the dynamically generated search results
-        return template.replace("${results}", resultHtml.toString());
-
-    }
-	@GetMapping("/lucky")
-	public String lucky(@RequestParam String keyword) {
-			List<String> urls = searcher.search(keyword, flippedIndexFileName);
-			if (!urls.isEmpty()) {
-				return urls.get(0);
-			} else {
-				return "No results found";
-			}
+		return template.replace("${results}", "<div class=\"result-container\">No results Found</div>");
 	}
-
-
 }
