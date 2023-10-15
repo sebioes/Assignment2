@@ -26,6 +26,7 @@ public class IndexFlipper {
             //to store keyword-link associations
             Map<String, List<String>> keywordMap = new HashMap<>();
 
+            
 
             //populate keywordMap
             for (String[] line : csvLines) {
@@ -51,11 +52,6 @@ public class IndexFlipper {
 
            /* //we'll use this later
             Set<String[]> lines = new HashSet<>();
-
-
-
-
-
 
             Set<String[]> map = new HashSet<>();
 

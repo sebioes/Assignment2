@@ -13,9 +13,10 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Objects;
 
 
 @RestController
@@ -53,19 +54,39 @@ public class SearchEngine {
 	@GetMapping("/")
 	public String index() {
 		try {
-			return Files.readString(Path.of("./src/main/resources/static/index.html"));
+			String html = Files.readString(Path.of("./src/main/resources/static/index.html"));
+			return html.replace("${results}", "");
 		} catch(IOException e) {
             throw new RuntimeException(e);
         }
     }
 	@GetMapping("/search")
-	public List<String> search2(@RequestParam String keyword) {
-		return searcher.search(keyword, flippedIndexFileName);
-	}
+	public String search(@RequestParam String keyword) throws IOException {
+		List<String> urls = searcher.search(keyword, flippedIndexFileName);
+
+		// Create a StringBuilder to build the search results as HTML
+		StringBuilder resultHtml = new StringBuilder("<div class=\"result-container\"><ul>");
+
+		for (String url : urls) {
+			// Format each search result as a list item
+			resultHtml.append("<li><a href=\"").append(url).append("\">").append(url).append("</a></li>");
+		}
+
+		// Close the unordered list
+		resultHtml.append("</ul></div>");
+
+
+		// Read the HTML template
+		String template = Files.readString(Path.of("./src/main/resources/static/index.html"));
+
+		// Replace the "${results}" placeholder with the dynamically generated search results
+        return template.replace("${results}", resultHtml.toString());
+
+    }
 	@GetMapping("/lucky")
 	public String lucky(@RequestParam String keyword) {
 			List<String> urls = searcher.search(keyword, flippedIndexFileName);
-			if (urls.size() > 0) {
+			if (!urls.isEmpty()) {
 				return urls.get(0);
 			} else {
 				return "No results found";

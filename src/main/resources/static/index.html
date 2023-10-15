@@ -2,35 +2,77 @@
 <html>
 <head><title>Hypermedia Environment</title></head>
 <body>
-<form id = "form_id" action = "/search" method = "get">
-    <div id = "main">
-    <h1>The Coño Search Engine</h1>
-    <!--add input for keyword-->
-    <input type = "text" name = "keyword" />
-    <!--add button for "Search"-->
-        <div name="buttons">
-            <input type = "submit" value = "Search" />
-            <!--add button for "I'm feeling lucky"-->
-            <input type = "submit" value = "I'm feeling lucky" />
-        </div>
-    </div>
+
+<h1>Search Engine</h1>
+<form id="form_id" action="/search" method="get">
+    <input type="text" name="keyword" placeholder="Search or I'm Feeling Lucky..." />
+    <button type="submit" onclick="document.getElementById('form_id').action = '/search';">Search</button>
+    <button type="submit" onclick="document.getElementById('form_id').action = '/lucky';">I'm Feeling Lucky</button>
 </form>
+    ${results} <!-- This is where the search results will be displayed -->
 </body>
 <style>
-    #main {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 20%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+    body {
+        margin: 10% auto;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        text-align: center;
+        color: forestgreen;
+    }
+
+    form {
+
+        text-align: center;
+        margin: 30px auto;
+        width: 300px;
+    }
+
+    input[type="text"] {
+        width: 100%;
         padding: 10px;
+        border: 2px solid forestgreen;
+        border-radius: 5px;
     }
-    .buttons
-    {
-        display: flex;
-        align-self: center;
-        flex-direction: row;
+
+    button[type="submit"] {
+        background-color: forestgreen;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin: 10px;
+        cursor: pointer;
     }
+
+    button[type="submit"]:hover {
+        background-color: darkgreen;
+    }
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    ul li {
+        margin-bottom: 10px;
+    }
+
+    ul li a {
+        text-decoration: none;
+        color: forestgreen;
+    }
+    .result-container {
+        margin: 20px auto;
+        text-align: left;
+        width: 80%;
+        max-width: 600px;
+        padding: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
 </style>
 </html>
