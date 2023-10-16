@@ -86,7 +86,7 @@ public class SearchEngine {
 			}
 	}
 	@GetMapping("/no-results")
-	public String noResult() throws IOException {
+	public String noresult() throws IOException {
 		String template = Files.readString(Path.of("./src/main/resources/static/index.html"));
 
 		// Replace the "${results}" placeholder with the dynamically generated search results

@@ -54,6 +54,41 @@
             "application/json":
               "schema":
                 "$ref": '#/components/schemas/Url'
+  "/admin/crawl":
+    post:
+      summary: "Launch a new crawling operation"
+      responses:
+        200:
+          description: "Crawling operation successfully initiated"
+  "/admin/regenerate-index":
+      post:
+        summary: "Regenerate the inverted index"
+        responses:
+          200:
+            description: "Inverted index regenerated successfully"
+  "/admin/delete-url":
+      post:
+        summary: "Delete a URL from the index"
+        parameters:
+          - in: "query"
+            name: "url"
+            schema:
+              type: "string"
+            description: "The URL to delete"
+        responses:
+          200:
+            description: "URL deleted from the index"
+  "/admin/update-url-info":
+      post:
+        summary: "Update (or add) information for a given URL in the index"
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlInfo'
+        responses:
+          200:
+            description: "URL information updated/added successfully"
 
 "components":
   "schemas":
@@ -65,3 +100,7 @@
       "type": "array"
       "items":
         "$ref": "#/components/schemas/Url"
+    "UrlInfo":
+        "type": "object"
+        "items":
+          "$ref": "#/components/schemas/UrlInfo"
