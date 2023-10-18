@@ -1,13 +1,18 @@
 package com.example.searchengine;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -77,13 +82,25 @@ public class SearchEngine {
 		}
     }
 	@GetMapping("/lucky")
-	public RedirectView lucky(@RequestParam String keyword) {
-			List<String> urls = searcher.search(keyword, flippedIndexFileName);
-			if (!urls.isEmpty()) {
-				return new RedirectView(urls.get(0));
+	public ResponseEntity<?> lucky(@RequestParam String keyword, @RequestHeader("Accept") String acceptHeader) {
+		if (keyword == null || keyword.isEmpty()) {
+			// If the input is invalid, return a 400 Bad Request response
+			return ResponseEntity.badRequest().body("Missing the query string parameter.");
+		}
+
+		List<String> urls = searcher.search(keyword, flippedIndexFileName);
+		if (!urls.isEmpty()) {
+			if (acceptHeader.contains("application/json")) {
+				return ResponseEntity.ok(urls.get(0));
 			} else {
-				return new RedirectView("/no-results");
+				HttpHeaders headers = new HttpHeaders();
+
+				headers.setLocation(URI.create(urls.get(0)));
+				return new ResponseEntity<>(headers, HttpStatus.FOUND);
 			}
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
 	@GetMapping("/no-results")
 	public String noresult() throws IOException {
