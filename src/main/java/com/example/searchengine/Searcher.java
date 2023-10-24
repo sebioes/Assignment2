@@ -42,8 +42,8 @@ public class Searcher {
 
         // TODO : FIX time measurement
         long endTime = System.currentTimeMillis();
-        long duration = (endTime - startTime) / 1000;
-        System.out.println("duration searcher flipped: " + duration);
+        long duration = (endTime - startTime);
+        System.out.println("duration index flipped searcher: " + duration + "ms");
         return urls;
     }
 
